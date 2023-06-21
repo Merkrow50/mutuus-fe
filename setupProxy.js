@@ -10,4 +10,13 @@ module.exports = function(app) {
       secure: false, // Isso desabilita a verificação do certificado SSL
     })
   );
+
+  app.use(
+    '/',
+    createProxyMiddleware({
+      target: enviroment_dev.host, // Substitua com a URL da sua API de destino
+      changeOrigin: true,
+      secure: false, // Isso desabilita a verificação do certificado SSL
+    })
+  );
 };

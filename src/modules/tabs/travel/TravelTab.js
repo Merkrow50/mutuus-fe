@@ -1,8 +1,8 @@
 import {useContext} from "react";
 import {Button, View, Text} from "react-native";
-import {AuthContext} from "../../config/Contexts";
+import {AuthContext} from "../../../config/Contexts";
 
-export function HomeScreen() {
+export function TravelTab() {
   const {signOut} = useContext(AuthContext);
 
   return (

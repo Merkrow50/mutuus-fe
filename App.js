@@ -4,10 +4,10 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {SignInScreen} from "./src/modules/signIn/SignIn";
 import {SplashComponent} from "./src/components/splash/SplashComponent";
-import {HomeScreen} from "./src/modules/home/Home";
 import * as SecureStore from 'expo-secure-store';
 import {AuthContext} from "./src/config/Contexts";
-import { post } from './src/http/api';
+import {post, get} from './src/http/api';
+import {CentralTab} from "./src/modules/tabs/tab/CentralTab";
 
 const Stack = createNativeStackNavigator();
 
@@ -68,6 +68,15 @@ export default function App({navigation}) {
 
   const authContext = useMemo(
     () => ({
+      me: async (data) => {
+        try {
+          const user = await get("/user/me")
+          console.log(user)
+          await SecureStore.setItemAsync('user', JSON.stringify(user));
+        } catch (e) {
+          console.error(e)
+        }
+      },
       signIn: async (data) => {
         // In a production app, we need to send some data (usually username, password) to server and get a token
         // We will also need to handle errors if sign in failed
@@ -77,7 +86,7 @@ export default function App({navigation}) {
 
         try {
 
-          token = await post("/authenticate", data);
+          token = await post("/auth/authenticate", data);
 
           await SecureStore.setItemAsync('userToken', JSON.stringify(token));
 
@@ -87,7 +96,10 @@ export default function App({navigation}) {
 
         dispatch({type: 'SIGN_IN', token: token});
       },
-      signOut: () => dispatch({type: 'SIGN_OUT'}),
+      signOut: async () => {
+        await SecureStore.deleteItemAsync('userToken');
+        dispatch({type: 'SIGN_OUT'})
+      },
       signUp: async (data) => {
         // In a production app, we need to send user data to server and get a token
         // We will also need to handle errors if sign up failed
@@ -111,7 +123,7 @@ export default function App({navigation}) {
   return (
     <AuthContext.Provider value={authContext}>
       <NavigationContainer>
-        <Stack.Navigator>
+        <Stack.Navigator screenOptions={{headerShown: false}}>
           {state.isLoading ? (
             // We haven't finished checking for the token yet
             <Stack.Screen name="Splash" component={SplashComponent}/>
@@ -120,15 +132,10 @@ export default function App({navigation}) {
             <Stack.Screen
               name="SignIn"
               component={SignInScreen}
-              options={{
-                title: 'Sign in',
-                // When logging out, a pop animation feels intuitive
-                animationTypeForReplace: state.isSignout ? 'pop' : 'push',
-              }}
             />
           ) : (
             // User is signed in
-            <Stack.Screen name="Home" component={HomeScreen}/>
+            <Stack.Screen name="Tabs" component={CentralTab}/>
           )}
         </Stack.Navigator>
       </NavigationContainer>
