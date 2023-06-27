@@ -16,19 +16,9 @@ export function HomeTab() {
             <Text>Seja Bem Vindo!</Text>
           </View>
         }/>
-      <View>
-        <Text style={{
-            color: 'rgb(0,0,0)',
-            fontSize: 28,
-            fontWeight: 'bold',
-            marginBottom: 50,
-          textAlign: "center"
-          }}>Seja Bem Vindo!</Text>
-      </View>
-      <View style={{flex: 0.5, padding: 1,margin: 5, justifyContent: "center", backgroundColor: "#00904E"}}>
+      <View style={{flex: 0.4, padding: 1, margin: 5, justifyContent: "center", backgroundColor: "#00904E"}}>
         <MapScreen/>
       </View>
-
     </View>
   );
 }

@@ -8,10 +8,14 @@ import * as SecureStore from 'expo-secure-store';
 import {AuthContext} from "./src/config/Contexts";
 import {post, get} from './src/http/api';
 import {CentralTab} from "./src/modules/tabs/tab/CentralTab";
+import Moment from "moment/moment";
+import {CheckIn} from "./src/modules/checkIn/CheckIn";
 
 const Stack = createNativeStackNavigator();
 
 export default function App({navigation}) {
+
+  Moment.locale('br')
 
   const [state, dispatch] = useReducer(
     (prevState, action) => {
@@ -137,6 +141,7 @@ export default function App({navigation}) {
             // User is signed in
             <Stack.Screen name="Tabs" component={CentralTab}/>
           )}
+          <Stack.Screen name="CheckIn" component={CheckIn}/>
         </Stack.Navigator>
       </NavigationContainer>
     </AuthContext.Provider>

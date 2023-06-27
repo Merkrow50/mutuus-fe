@@ -1,50 +1,48 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, View} from 'react-native';
+import MapView, {Marker, Polyline} from 'react-native-maps';
 import * as Location from 'expo-location';
 
-export const MapScreen = () => {
-  const [location, setLocation] = useState(null);
+export const MapScreen = ({initialLocation, finishLocation}) => {
+  const [startLocation, setStartLocation] = useState(initialLocation);
+  const [endLocation, setEndLocation] = useState(finishLocation);
 
   useEffect(() => {
-    (async () => {
-      // Request permission for accessing the user's location
-      const { status } = await Location.requestForegroundPermissionsAsync();
+    const requestLocationPermission = async () => {
+      const {status} = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        // Handle permission denied
+        // Trate o caso em que a permissão não é concedida pelo usuário
         return;
       }
 
-      // Get the user's current location
-      const location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-    })();
+      if (!initialLocation) {
+        // Obtenha a localização atual como ponto de partida
+        const location = await Location.getCurrentPositionAsync({});
+        const {latitude, longitude} = location.coords;
+        setStartLocation({latitude, longitude});
+      }
+
+      if (finishLocation) {
+        setEndLocation(finishLocation);
+      }
+
+    };
+
+    requestLocationPermission();
   }, []);
 
   return (
+
     <View style={styles.container}>
-      {location ? (
-        <MapView
-          style={styles.map}
-          initialRegion={{
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-        >
-          <Marker
-            coordinate={{
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
-            }}
-            title="My Location"
-          />
+      {startLocation && (
+        <MapView style={styles.map} initialRegion={{...startLocation, latitudeDelta: 0.0922, longitudeDelta: 0.0421}}>
+          <Marker coordinate={startLocation} title="Start"/>
+          {finishLocation && <Marker coordinate={endLocation} title="Destiny"/>}
+          {startLocation && finishLocation && <Polyline coordinates={[startLocation, endLocation]} strokeWidth={4} strokeColor="#FF0000"/>}
         </MapView>
-      ) : (
-        <Text>Loading...</Text>
       )}
     </View>
+
   );
 };
 

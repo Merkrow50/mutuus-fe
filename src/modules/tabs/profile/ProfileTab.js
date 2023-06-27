@@ -46,7 +46,7 @@ export const ProfileTab = () => {
           </View>
 
         }/>
-      <View style={{flex: 0.9, width: "100%"}}>
+      <View style={{flex: 0.8, width: "100%"}}>
         <BaseTouchbleOpacityIconItem icon="logout" title="Logout" subtitle="Press to logout your Account" onPress={signOut}/>
       </View>
     </View>
